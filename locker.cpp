@@ -46,8 +46,12 @@ struct sock_lock* create_a_sock() {
     sock->lock.l_len = 0;
     return sock;
 }
+int get_if_locked(struct sock_lock* sock) {
+    fcntl(sock->fd, F_GETLK, &sock->lock);
+    return sock->lock.l_type;
+}
 int lock_sock(struct sock_lock* sock) {
-    while (sock->lock.l_type == F_WRLCK) {
+    while (get_if_locked(sock) == F_WRLCK) {
     }
     sock->pid = getppid();
     sock->lock.l_type = F_WRLCK;
@@ -56,8 +60,4 @@ int lock_sock(struct sock_lock* sock) {
 int unlock_sock(struct sock_lock* sock) {
     sock->lock.l_type = F_UNLCK;
     return fcntl(sock->fd, F_SETLKW, &sock->lock);
-}
-int get_if_locked(struct sock_lock* sock) {
-    fcntl(sock->fd, F_GETLK, &sock->lock);
-    return sock->lock.l_type;
 }

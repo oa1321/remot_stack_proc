@@ -30,4 +30,4 @@ test.o: test.cpp
 	$(CC) $(FLAGS) -c test.cpp
 
 clean:
-	rm -f *.o client server test
+	rm -f *.o client server test locker
